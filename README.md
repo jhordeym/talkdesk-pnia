@@ -177,7 +177,57 @@ as long as testing the implemented controller:
 @Test
 void givenPhoneNumbers_whenAggregate_thenStatus200() throws Exception
 ```
+## Results timing
 
+Running the request in the following environments these were the results:
+
+http://localhost:8888/aggregate (dev):
+```
+curl -d '["+1983236248", "+1 7490276403", "001382355A", "+351917382672", "+35191734022"]' "http://localhost:8888/aggregate" -H "Content-Type: application/json" -H "Accept: application/json" -w "\n%{time_total} secs\n"
+{"1":{"Technology":1,"Banking":1},"3519173":{"Clothing":2}}
+2,274348 secs
+```
+
+http://localhost:8080/aggregate (docker):
+```
+~ curl -d '["+1983236248", "+1 7490276403", "001382355A", "+351917382672", "+35191734022"]' "http://localhost:8080/aggregate" -H "Content-Type: application/json" -H "Accept: application/json" -w "\n%{time_total} secs\n"
+{"1":{"Technology":1,"Banking":1},"3519173":{"Clothing":2}}
+2,717550 secs
+```
+
+https://talkdesk-pnia.herokuapp.com/aggregate (heroku):
+```
+~ curl -d '["+1983236248", "+1 7490276403", "001382355A", "+351917382672", "+35191734022"]' "https://talkdesk-pnia.herokuapp.com/aggregate" -H "Content-Type: application/json" -H "Accept: application/json" -w "\n%{time_total} secs\n"
+{"1":{"Technology":1,"Banking":1},"3519173":{"Clothing":2}}
+8,951640 secs
+```
+
+With the provided "validate.sh" script:
+```
+local:
+
+./validate.sh localhost:8888/aggregate
+./validate.sh: line 27: jq: command not found
+./validate.sh: line 29: jq: command not found
+SUCCESS the API complies with the spec
+
+
+docker:
+
+./validate.sh localhost:8080/aggregate
+./validate.sh: line 27: jq: command not found
+./validate.sh: line 29: jq: command not found
+SUCCESS the API complies with the spec
+
+
+heroku:
+
+./validate.sh https://talkdesk-pnia.herokuapp.com/aggregate
+FAIL the API could not be reached, returned an error, or did not reply within 5 seconds
+```
+
+As we can see, for both local and docker response time of API is around 2 secs 
+(which is within the limits of the validate.sh script), so the choice for Deployment is Docker.
 
 ## Build
 
