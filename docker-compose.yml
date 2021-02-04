@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+  pnia:
+    image: talkdesk/pnia
+    ports: ["8080:8080"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: "java -Dspring.profiles.active=docker -Djava.security.egd=file:/dev/./urandom -jar /app.jar"
+    restart: always
